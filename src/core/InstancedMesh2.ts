@@ -168,6 +168,7 @@ export class InstancedMesh2<
   protected readonly _allowsEuler: boolean;
   protected readonly _tempInstance: InstancedEntity;
   protected _useOpacity = false;
+  protected _currentMaterial: Material = null;
   protected _customProgramCacheKeyBase: () => string = null;
   protected _onBeforeCompileBase: (parameters: WebGLProgramParametersWithUniforms, renderer: WebGLRenderer) => void = null;
   protected _propertiesGetBase: (obj: unknown) => unknown = null;
@@ -406,11 +407,11 @@ export class InstancedMesh2<
   }
 
   protected _customProgramCacheKey = (): string => {
-    return `ezInstancedMesh2_${this.id}_${!!this.colorsTexture}_${this._useOpacity}_${!!this.boneTexture}_${!!this.uniformsTexture}_${this._customProgramCacheKeyBase()}`;
+    return `ezInstancedMesh2_${this.id}_${!!this.colorsTexture}_${this._useOpacity}_${!!this.boneTexture}_${!!this.uniformsTexture}_${this._customProgramCacheKeyBase.call(this._currentMaterial)}`;
   };
 
   protected _onBeforeCompile = (shader: WebGLProgramParametersWithUniforms, renderer: WebGLRenderer): void => {
-    if (this._onBeforeCompileBase) this._onBeforeCompileBase(shader, renderer);
+    if (this._onBeforeCompileBase) this._onBeforeCompileBase.call(this._currentMaterial, shader, renderer);
 
     shader.instancing = false;
 
@@ -453,7 +454,8 @@ export class InstancedMesh2<
   };
 
   protected patchMaterial(renderer: WebGLRenderer, material: Material): void {
-    this._customProgramCacheKeyBase = material.customProgramCacheKey; // avoid .bind(material); to prevent memoryl leak
+    this._currentMaterial = material;
+    this._customProgramCacheKeyBase = material.customProgramCacheKey; // avoid .bind(material); to prevent memory leak
     this._onBeforeCompileBase = material.onBeforeCompile;
     material.customProgramCacheKey = this._customProgramCacheKey;
     material.onBeforeCompile = this._onBeforeCompile;
@@ -476,6 +478,7 @@ export class InstancedMesh2<
   }
 
   protected unpatchMaterial(renderer: WebGLRenderer, material: Material): void {
+    this._currentMaterial = null;
     renderer.properties.get = this._propertiesGetBase;
     material.onBeforeCompile = this._onBeforeCompileBase;
     material.customProgramCacheKey = this._customProgramCacheKeyBase;

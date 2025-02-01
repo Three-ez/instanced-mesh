@@ -99,7 +99,7 @@ export class SquareDataTexture extends DataTexture {
    * @default Infinity
    */
   public maxUpdateCalls = Infinity;
-  /** @internal */ _data: TypedArray;
+  /** @internal */ _data: TypedArray; // TODO make it public or remove it?
   protected _channels: ChannelSize;
   protected _pixelsPerInstance: number;
   protected _stride: number;

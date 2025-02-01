@@ -41,14 +41,14 @@ declare module '../InstancedMesh2.js' {
 
 InstancedMesh2.prototype.getUniformAt = function (id: number, name: string, target?: UniformValueObj): UniformValue {
   if (!this.uniformsTexture) {
-    throw new Error('Before get/set uniform, it\'s necessary to use "initUniformPerInstance".');
+    throw new Error('Before get/set uniform, it\'s necessary to use "initUniformsPerInstance".');
   }
   return this.uniformsTexture.getUniformAt(id, name, target);
 };
 
 InstancedMesh2.prototype.setUniformAt = function (id: number, name: string, value: UniformValue): void {
   if (!this.uniformsTexture) {
-    throw new Error('Before get/set uniform, it\'s necessary to use "initUniformPerInstance".');
+    throw new Error('Before get/set uniform, it\'s necessary to use "initUniformsPerInstance".');
   }
   this.uniformsTexture.setUniformAt(id, name, value);
   this.uniformsTexture.enqueueUpdate(id);
